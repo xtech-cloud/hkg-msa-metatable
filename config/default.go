@@ -3,7 +3,7 @@ package config
 const defaultYAML string = `
 service:
     name: xtc.api.hkg.metatable
-    address: :18801
+    address: :19901
     ttl: 15
     interval: 10
 logger:
