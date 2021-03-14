@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"hkg-msa-metatable/config"
+	"hkg-msa-metatable/model"
 	"hkg-msa-metatable/handler"
 	"io"
 	"os"
@@ -18,6 +19,7 @@ import (
 
 func main() {
 	config.Setup()
+    model.Setup()
 
 	// New Service
 	service := micro.NewService(
@@ -33,6 +35,7 @@ func main() {
 
 	// Register Handler
 	proto.RegisterHealthyHandler(service.Server(), new(handler.Healthy))
+	proto.RegisterVocabularyHandler(service.Server(), new(handler.Vocabulary))
 
 	app, _ := filepath.Abs(os.Args[0])
 
@@ -49,6 +52,9 @@ func main() {
 	if err := service.Run(); err != nil {
 		logger.Fatal(err)
 	}
+
+    // Release
+    model.Cancel()
 }
 
 func md5hex(_file string) string {
