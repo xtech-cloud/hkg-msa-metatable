@@ -2,7 +2,7 @@ package config
 
 const defaultYAML string = `
 service:
-    name: msa.api.hkg.metatable
+    name: xtc.api.hkg.metatable
     address: :18801
     ttl: 15
     interval: 10
