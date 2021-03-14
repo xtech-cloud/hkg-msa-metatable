@@ -34,7 +34,7 @@ call:
 
 .PHONY: post
 post:
-	curl -X POST -d '{"msg":"hello"}' 127.0.0.1:8080/hkg/metatable/Healthy/Echo
+	curl -X POST -d '{"msg":"hello"}' localhost:18800/hkg/metatable/Healthy/Echo
 
 .PHONY: benchmark
 benchmark:

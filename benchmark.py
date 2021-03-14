@@ -10,7 +10,7 @@ from threading import Thread, Lock
 BEGIN
 '''
 
-domain = 'http://127.0.0.1:8080'
+domain = 'http://127.0.0.1:18800'
 
 urls = [
         domain+'/hkg/metatable/Healthy/Echo',
