@@ -28,16 +28,16 @@ run-cs:
 .PHONY: call
 call:
 	MICRO_REGISTRY=consul micro call xtc.api.hkg.metatable Healthy.Echo '{"msg":"hello"}'
-	MICRO_REGISTRY=consul micro call xtc.api.hkg.metatable Vocabulary.ImportYaml '{"content":"tags:\n  - CPU\n  - PC\nvalues:\n  - i5\n  - i7\n  - i9"}'
+	MICRO_REGISTRY=consul micro call xtc.api.hkg.metatable Vocabulary.ImportYaml '{"content":"labels:\n  - CPU\n  - PC\nvalues:\n  - i5\n  - i7\n  - i9"}'
 	MICRO_REGISTRY=consul micro call xtc.api.hkg.metatable Vocabulary.List 
 	MICRO_REGISTRY=consul micro call xtc.api.hkg.metatable Vocabulary.Find '{"name":"i5"}'
 
 .PHONY: post
 post:
-	curl -X POST -d '{"msg":"hello"}' localhost:18800/hkg/metatable/Healthy/Echo
+	curl -X POST -d '{"msg":"hello"}' localhost:8080/hkg/metatable/Healthy/Echo
 
-.PHONY: benchmark
-benchmark:
+.PHONY: bm
+bm:
 	python3 benchmark.py
 
 .PHONY: dist

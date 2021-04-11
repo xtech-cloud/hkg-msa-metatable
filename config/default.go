@@ -8,12 +8,12 @@ service:
     interval: 10
 logger:
     level: info
-    dir: /var/log/msa/
+    dir: /var/log/hkg/
 database:
     mongodb:
         address: localhost:27017
         timeout: 10
         user: root
         password: mongodb@OMO
-        db: hkg_msa_metatable
+        db: hkg_metatable
 `

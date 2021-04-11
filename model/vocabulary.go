@@ -7,13 +7,13 @@ import (
 )
 
 const (
-	CollectionName = "hkg_msa_metatable_vocabulary"
+	VocabularyCollectionName = "hkg_metatable_vocabulary"
 )
 
 type Vocabulary struct {
 	ID   string   `bson:"_id"`
 	Name string   `bason:"Name"`
-	Tag  []string `bason:"Tag"`
+	Label []string `bason:"Label"`
 }
 
 type VocabularyDAO struct {
@@ -48,7 +48,7 @@ func (this *VocabularyDAO) InsertMany(_vocabulary []*Vocabulary) (_err error) {
 		documentAry[i] = document
 	}
 
-	_, err := this.conn.DB.Collection(CollectionName).InsertMany(ctx, documentAry)
+	_, err := this.conn.DB.Collection(VocabularyCollectionName).InsertMany(ctx, documentAry)
 	if nil != err {
         // 忽略键重复的错误
         if mongo.IsDuplicateKeyError(err) {
@@ -64,7 +64,7 @@ func (this *VocabularyDAO) FindOne(_name string) (*Vocabulary, error) {
 	defer cancel()
 
 	filter := bson.D{{"name", _name}}
-	res := this.conn.DB.Collection(CollectionName).FindOne(ctx, filter)
+	res := this.conn.DB.Collection(VocabularyCollectionName).FindOne(ctx, filter)
 	if res.Err() == mongo.ErrNoDocuments {
 		return nil, nil
 	}
@@ -76,7 +76,7 @@ func (this *VocabularyDAO) FindOne(_name string) (*Vocabulary, error) {
 func (this *VocabularyDAO) Count() (int64, error) {
 	ctx, cancel := NewContext()
 	defer cancel()
-	count, err := this.conn.DB.Collection(CollectionName).EstimatedDocumentCount(ctx)
+	count, err := this.conn.DB.Collection(VocabularyCollectionName).EstimatedDocumentCount(ctx)
 	return count, err
 }
 
@@ -93,7 +93,7 @@ func (this *VocabularyDAO) List(_offset int64, _count int64) ([]*Vocabulary, err
 	findOptions.SetSkip(_offset)
 	findOptions.SetLimit(_count)
 
-	cur, err := this.conn.DB.Collection(CollectionName).Find(ctx, filter, findOptions)
+	cur, err := this.conn.DB.Collection(VocabularyCollectionName).Find(ctx, filter, findOptions)
 	if nil != err {
 		return make([]*Vocabulary, 0), err
 	}
@@ -118,10 +118,10 @@ func (this *VocabularyDAO) UpdateOne(_vocabulary *Vocabulary) error {
 	filter := bson.D{{"name", _vocabulary.Name}}
 	update := bson.D{
 		{"$set", bson.D{
-			{"tag", _vocabulary.Tag},
+			{"label", _vocabulary.Label},
 		}},
 	}
-	_, err := this.conn.DB.Collection(CollectionName).UpdateOne(ctx, filter, update)
+	_, err := this.conn.DB.Collection(VocabularyCollectionName).UpdateOne(ctx, filter, update)
 	if nil != err {
 		return err
 	}

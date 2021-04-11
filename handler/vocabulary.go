@@ -13,7 +13,7 @@ import (
 type Vocabulary struct{}
 
 type VocabularyYaml struct {
-	Tags   []string `yaml:"tags"`
+	Labels   []string `yaml:"labels"`
 	Values []string `yaml:"values"`
 }
 
@@ -34,13 +34,13 @@ func (this *Vocabulary) ImportYaml(_ctx context.Context, _req *proto.ImportYamlR
 	vocabularyAry := make([]*model.Vocabulary, len(yamlVocabulary.Values))
 	for i, value := range yamlVocabulary.Values {
         uid := value 
-        for _, tag := range yamlVocabulary.Tags {
-            uid += tag
+        for _, label:= range yamlVocabulary.Labels{
+            uid += label
         }
 		vocabularyAry[i] = &model.Vocabulary{
             ID: model.ToUUID(uid),
 			Name: value,
-			Tag:  yamlVocabulary.Tags,
+			Label:  yamlVocabulary.Labels,
 		}
 	}
 	err = dao.InsertMany(vocabularyAry)
@@ -77,7 +77,7 @@ func (this *Vocabulary) List(_ctx context.Context, _req *proto.ListRequest, _rsp
 	for i, v := range vocabularyAry {
 		_rsp.Entity[i] = &proto.VocabularyEntity{
 			Name: v.Name,
-			Tag:  v.Tag,
+			Label:  v.Label,
 		}
 	}
 	return nil
