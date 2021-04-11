@@ -13,7 +13,7 @@ import (
 type Vocabulary struct{}
 
 type VocabularyYaml struct {
-	Labels   []string `yaml:"labels"`
+	Labels []string `yaml:"labels"`
 	Values []string `yaml:"values"`
 }
 
@@ -21,6 +21,12 @@ func (this *Vocabulary) ImportYaml(_ctx context.Context, _req *proto.ImportYamlR
 	logger.Infof("Received Vocabulary.ImportYaml, req is %v", _req)
 
 	_rsp.Status = &proto.Status{}
+
+	if "" == _req.Content {
+		_rsp.Status.Code = 1
+		_rsp.Status.Message = "content is required"
+		return nil
+	}
 
 	yamlVocabulary := &VocabularyYaml{}
 	err := yaml.Unmarshal([]byte(_req.Content), yamlVocabulary)
@@ -33,14 +39,14 @@ func (this *Vocabulary) ImportYaml(_ctx context.Context, _req *proto.ImportYamlR
 	dao := model.NewVocabularyDAO(nil)
 	vocabularyAry := make([]*model.Vocabulary, len(yamlVocabulary.Values))
 	for i, value := range yamlVocabulary.Values {
-        uid := value 
-        for _, label:= range yamlVocabulary.Labels{
-            uid += label
-        }
+		uid := value
+		for _, label := range yamlVocabulary.Labels {
+			uid += label
+		}
 		vocabularyAry[i] = &model.Vocabulary{
-            ID: model.ToUUID(uid),
-			Name: value,
-			Label:  yamlVocabulary.Labels,
+			ID:    model.ToUUID(uid),
+			Name:  value,
+			Label: yamlVocabulary.Labels,
 		}
 	}
 	err = dao.InsertMany(vocabularyAry)
@@ -62,11 +68,11 @@ func (this *Vocabulary) List(_ctx context.Context, _req *proto.ListRequest, _rsp
 	}
 
 	dao := model.NewVocabularyDAO(nil)
-    total, err := dao.Count()
+	total, err := dao.Count()
 	if nil != err {
 		return err
 	}
-    _rsp.Total = total
+	_rsp.Total = total
 
 	vocabularyAry, err := dao.List(offset, count)
 	if nil != err {
@@ -76,8 +82,9 @@ func (this *Vocabulary) List(_ctx context.Context, _req *proto.ListRequest, _rsp
 	_rsp.Entity = make([]*proto.VocabularyEntity, len(vocabularyAry))
 	for i, v := range vocabularyAry {
 		_rsp.Entity[i] = &proto.VocabularyEntity{
-			Name: v.Name,
-			Label:  v.Label,
+			Uuid:  v.ID,
+			Name:  v.Name,
+			Label: v.Label,
 		}
 	}
 	return nil
@@ -88,4 +95,20 @@ func (this *Vocabulary) Find(_ctx context.Context, _req *proto.FindRequest, _rsp
 
 	_rsp.Status = &proto.Status{}
 	return nil
+}
+
+func (this *Vocabulary) Delete(_ctx context.Context, _req *proto.DeleteRequest, _rsp *proto.BlankResponse) error {
+	logger.Infof("Received Vocabulary.Delete, req is %v", _req)
+
+	_rsp.Status = &proto.Status{}
+
+	if "" == _req.Uuid {
+		_rsp.Status.Code = 1
+		_rsp.Status.Message = "uuid is required"
+		return nil
+	}
+
+	dao := model.NewVocabularyDAO(nil)
+	err := dao.DeleteOne(_req.Uuid)
+	return err
 }

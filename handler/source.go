@@ -16,12 +16,19 @@ type SourceYaml struct {
 	Name       string `yaml:"name"`
 	Address    string `yaml:"address"`
 	Expression string `yaml:"expression"`
+	Attribute  string `yaml:"attribute"`
 }
 
 func (this *Source) ImportYaml(_ctx context.Context, _req *proto.ImportYamlRequest, _rsp *proto.BlankResponse) error {
 	logger.Infof("Received Source.ImportYaml, req is %v", _req)
 
 	_rsp.Status = &proto.Status{}
+
+	if "" == _req.Content {
+		_rsp.Status.Code = 1
+		_rsp.Status.Message = "content is required"
+		return nil
+	}
 
 	yamlSource := &SourceYaml{}
 	err := yaml.Unmarshal([]byte(_req.Content), yamlSource)
@@ -37,6 +44,7 @@ func (this *Source) ImportYaml(_ctx context.Context, _req *proto.ImportYamlReque
 		Name:       yamlSource.Name,
 		Address:    yamlSource.Address,
 		Expression: yamlSource.Expression,
+		Attribute:  yamlSource.Attribute,
 	}
 	err = dao.InsertOne(source)
 	return err
@@ -71,10 +79,28 @@ func (this *Source) List(_ctx context.Context, _req *proto.ListRequest, _rsp *pr
 	_rsp.Entity = make([]*proto.SourceEntity, len(ary))
 	for i, v := range ary {
 		_rsp.Entity[i] = &proto.SourceEntity{
-			Name:         v.Name,
-			Address:      v.Address,
+			Uuid:       v.ID,
+			Name:       v.Name,
+			Address:    v.Address,
 			Expression: v.Expression,
+			Attribute: v.Attribute,
 		}
 	}
 	return nil
+}
+
+func (this *Source) Delete(_ctx context.Context, _req *proto.DeleteRequest, _rsp *proto.BlankResponse) error {
+	logger.Infof("Received Source.Delete, req is %v", _req)
+
+	_rsp.Status = &proto.Status{}
+
+	if "" == _req.Uuid {
+		_rsp.Status.Code = 1
+		_rsp.Status.Message = "uuid is required"
+		return nil
+	}
+
+	dao := model.NewSourceDAO(nil)
+	err := dao.DeleteOne(_req.Uuid)
+	return err
 }

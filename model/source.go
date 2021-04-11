@@ -15,6 +15,7 @@ type Source struct {
 	Name       string `bason:"Name"`
 	Address    string `bason:"Address"`
 	Expression string `bason:"Expression"`
+	Attribute string `bason:"Attribute"`
 }
 
 type SourceDAO struct {
@@ -103,11 +104,18 @@ func (this *SourceDAO) UpdateOne(_source *Source) error {
 		{"$set", bson.D{
 			{"address", _source.Address},
 			{"expression", _source.Expression},
+			{"attribute", _source.Attribute},
 		}},
 	}
 	_, err := this.conn.DB.Collection(SourceCollectionName).UpdateOne(ctx, filter, update)
-	if nil != err {
-		return err
-	}
-	return nil
+	return err
+}
+
+func (this *SourceDAO) DeleteOne(_id string) error {
+	ctx, cancel := NewContext()
+	defer cancel()
+
+	filter := bson.D{{"_id", _id}}
+	_, err := this.conn.DB.Collection(SourceCollectionName).DeleteOne(ctx, filter)
+	return err
 }

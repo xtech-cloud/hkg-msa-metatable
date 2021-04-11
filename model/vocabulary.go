@@ -122,8 +122,14 @@ func (this *VocabularyDAO) UpdateOne(_vocabulary *Vocabulary) error {
 		}},
 	}
 	_, err := this.conn.DB.Collection(VocabularyCollectionName).UpdateOne(ctx, filter, update)
-	if nil != err {
-		return err
-	}
-	return nil
+	return err
+}
+
+func (this *VocabularyDAO) DeleteOne(_id string) error {
+	ctx, cancel := NewContext()
+	defer cancel()
+
+	filter := bson.D{{"_id", _id}}
+	_, err := this.conn.DB.Collection(VocabularyCollectionName).DeleteOne(ctx, filter)
+	return err
 }
