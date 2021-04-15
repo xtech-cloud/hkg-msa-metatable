@@ -37,6 +37,7 @@ func main() {
 	proto.RegisterHealthyHandler(service.Server(), new(handler.Healthy))
 	proto.RegisterVocabularyHandler(service.Server(), new(handler.Vocabulary))
 	proto.RegisterSourceHandler(service.Server(), new(handler.Source))
+	proto.RegisterSchemaHandler(service.Server(), new(handler.Schema))
 
 	app, _ := filepath.Abs(os.Args[0])
 

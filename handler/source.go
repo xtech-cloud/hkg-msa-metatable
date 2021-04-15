@@ -12,13 +12,6 @@ import (
 
 type Source struct{}
 
-type SourceYaml struct {
-	Name       string `yaml:"name"`
-	Address    string `yaml:"address"`
-	Expression string `yaml:"expression"`
-	Attribute  string `yaml:"attribute"`
-}
-
 func (this *Source) ImportYaml(_ctx context.Context, _req *proto.ImportYamlRequest, _rsp *proto.BlankResponse) error {
 	logger.Infof("Received Source.ImportYaml, req is %v", _req)
 
@@ -30,8 +23,8 @@ func (this *Source) ImportYaml(_ctx context.Context, _req *proto.ImportYamlReque
 		return nil
 	}
 
-	yamlSource := &SourceYaml{}
-	err := yaml.Unmarshal([]byte(_req.Content), yamlSource)
+	source := &model.Source{}
+	err := yaml.Unmarshal([]byte(_req.Content), source)
 	if nil != err {
 		_rsp.Status.Code = -1
 		_rsp.Status.Message = err.Error()
@@ -39,13 +32,7 @@ func (this *Source) ImportYaml(_ctx context.Context, _req *proto.ImportYamlReque
 	}
 
 	dao := model.NewSourceDAO(nil)
-	source := &model.Source{
-		ID:         model.ToUUID(yamlSource.Name),
-		Name:       yamlSource.Name,
-		Address:    yamlSource.Address,
-		Expression: yamlSource.Expression,
-		Attribute:  yamlSource.Attribute,
-	}
+	source.ID = model.ToUUID(source.Name)
 	err = dao.InsertOne(source)
 	return err
 }
@@ -83,7 +70,7 @@ func (this *Source) List(_ctx context.Context, _req *proto.ListRequest, _rsp *pr
 			Name:       v.Name,
 			Address:    v.Address,
 			Expression: v.Expression,
-			Attribute: v.Attribute,
+			Attribute:  v.Attribute,
 		}
 	}
 	return nil

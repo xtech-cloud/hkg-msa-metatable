@@ -12,11 +12,6 @@ import (
 
 type Vocabulary struct{}
 
-type VocabularyYaml struct {
-	Labels []string `yaml:"labels"`
-	Values []string `yaml:"values"`
-}
-
 func (this *Vocabulary) ImportYaml(_ctx context.Context, _req *proto.ImportYamlRequest, _rsp *proto.BlankResponse) error {
 	logger.Infof("Received Vocabulary.ImportYaml, req is %v", _req)
 
@@ -28,8 +23,8 @@ func (this *Vocabulary) ImportYaml(_ctx context.Context, _req *proto.ImportYamlR
 		return nil
 	}
 
-	yamlVocabulary := &VocabularyYaml{}
-	err := yaml.Unmarshal([]byte(_req.Content), yamlVocabulary)
+	vocabulary := &model.Vocabulary{}
+	err := yaml.Unmarshal([]byte(_req.Content), vocabulary)
 	if nil != err {
 		_rsp.Status.Code = -1
 		_rsp.Status.Message = err.Error()
@@ -37,19 +32,8 @@ func (this *Vocabulary) ImportYaml(_ctx context.Context, _req *proto.ImportYamlR
 	}
 
 	dao := model.NewVocabularyDAO(nil)
-	vocabularyAry := make([]*model.Vocabulary, len(yamlVocabulary.Values))
-	for i, value := range yamlVocabulary.Values {
-		uid := value
-		for _, label := range yamlVocabulary.Labels {
-			uid += label
-		}
-		vocabularyAry[i] = &model.Vocabulary{
-			ID:    model.ToUUID(uid),
-			Name:  value,
-			Label: yamlVocabulary.Labels,
-		}
-	}
-	err = dao.InsertMany(vocabularyAry)
+    vocabulary.ID = model.ToUUID(vocabulary.Name)
+	err = dao.InsertOne(vocabulary)
 	return err
 }
 
@@ -85,6 +69,8 @@ func (this *Vocabulary) List(_ctx context.Context, _req *proto.ListRequest, _rsp
 			Uuid:  v.ID,
 			Name:  v.Name,
 			Label: v.Label,
+            Schema: v.Schema,
+            Value: v.Value,
 		}
 	}
 	return nil

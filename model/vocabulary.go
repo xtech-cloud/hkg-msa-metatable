@@ -11,9 +11,11 @@ const (
 )
 
 type Vocabulary struct {
-	ID   string   `bson:"_id"`
-	Name string   `bason:"Name"`
-	Label []string `bason:"Label"`
+	ID     string   `bson:"_id"`
+	Name   string   `bason:"name" yaml:"name"`
+	Label  []string `bason:"label" yaml:"label"`
+	Value  []string `bason:"value" yaml:"value"`
+	Schema string   `bason:"schema" yaml:"schema"`
 }
 
 type VocabularyDAO struct {
@@ -32,8 +34,31 @@ func NewVocabularyDAO(_conn *Conn) *VocabularyDAO {
 	}
 }
 
+func (this *VocabularyDAO) InsertOne(_vocabulary *Vocabulary) (_err error) {
+	_err = nil
+
+	ctx, cancel := NewContext()
+	defer cancel()
+
+	document, err := bson.Marshal(_vocabulary)
+	if nil != err {
+		_err = err
+		return
+	}
+
+	_, err = this.conn.DB.Collection(VocabularyCollectionName).InsertOne(ctx, document)
+	if nil != err {
+		// 忽略键重复的错误
+		if mongo.IsDuplicateKeyError(err) {
+			err = nil
+		}
+	}
+	_err = err
+	return
+}
+
 func (this *VocabularyDAO) InsertMany(_vocabulary []*Vocabulary) (_err error) {
-    _err = nil
+	_err = nil
 
 	ctx, cancel := NewContext()
 	defer cancel()
@@ -42,7 +67,7 @@ func (this *VocabularyDAO) InsertMany(_vocabulary []*Vocabulary) (_err error) {
 	for i, vocabulary := range _vocabulary {
 		document, err := bson.Marshal(vocabulary)
 		if nil != err {
-            _err = err
+			_err = err
 			return
 		}
 		documentAry[i] = document
@@ -50,12 +75,12 @@ func (this *VocabularyDAO) InsertMany(_vocabulary []*Vocabulary) (_err error) {
 
 	_, err := this.conn.DB.Collection(VocabularyCollectionName).InsertMany(ctx, documentAry)
 	if nil != err {
-        // 忽略键重复的错误
-        if mongo.IsDuplicateKeyError(err) {
-            err = nil
-        }
+		// 忽略键重复的错误
+		if mongo.IsDuplicateKeyError(err) {
+			err = nil
+		}
 	}
-    _err = err
+	_err = err
 	return
 }
 
@@ -119,6 +144,7 @@ func (this *VocabularyDAO) UpdateOne(_vocabulary *Vocabulary) error {
 	update := bson.D{
 		{"$set", bson.D{
 			{"label", _vocabulary.Label},
+			{"schema", _vocabulary.Schema},
 		}},
 	}
 	_, err := this.conn.DB.Collection(VocabularyCollectionName).UpdateOne(ctx, filter, update)

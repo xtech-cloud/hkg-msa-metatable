@@ -12,10 +12,10 @@ const (
 
 type Source struct {
 	ID         string `bson:"_id"`
-	Name       string `bason:"Name"`
-	Address    string `bason:"Address"`
-	Expression string `bason:"Expression"`
-	Attribute string `bason:"Attribute"`
+	Name       string `bason:"name" yaml:"name"`
+	Address    string `bason:"address" yaml:"address"`
+	Expression string `bason:"expression" yaml:"expression"`
+	Attribute  string `bason:"attribute" yaml:"attribute"`
 }
 
 type SourceDAO struct {
