@@ -11,7 +11,7 @@ require (
 	github.com/micro/go-plugins/registry/etcdv3/v2 v2.9.1
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.8.1
-	github.com/xtech-cloud/hkg-msp-metatable v0.11.0
+	github.com/xtech-cloud/hkg-msp-metatable v1.10.1
 	go.mongodb.org/mongo-driver v1.5.0
 	google.golang.org/genproto v0.0.0-20191216164720-4f79533eabd1
 	gopkg.in/yaml.v2 v2.4.0

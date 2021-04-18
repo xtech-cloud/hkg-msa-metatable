@@ -509,6 +509,10 @@ github.com/xtech-cloud/hkg-msp-metatable v0.10.0 h1:URkC+T4ftDWBwJjAcq5RoSGpBjnc
 github.com/xtech-cloud/hkg-msp-metatable v0.10.0/go.mod h1:xqQP0jiT13aaIXqWV6mX8Usu8iijtfbVud9IwCHDwkA=
 github.com/xtech-cloud/hkg-msp-metatable v0.11.0 h1:tLnlfqyu2guMAznsCiO8BW1mPtj6VKzD2ALaCt3eIeA=
 github.com/xtech-cloud/hkg-msp-metatable v0.11.0/go.mod h1:xqQP0jiT13aaIXqWV6mX8Usu8iijtfbVud9IwCHDwkA=
+github.com/xtech-cloud/hkg-msp-metatable v1.10.0 h1:gxU23DJCK4hv3tFI99F/em4ls2rnRN1c/BfpYhUJEP8=
+github.com/xtech-cloud/hkg-msp-metatable v1.10.0/go.mod h1:xqQP0jiT13aaIXqWV6mX8Usu8iijtfbVud9IwCHDwkA=
+github.com/xtech-cloud/hkg-msp-metatable v1.10.1 h1:hcz1dOrpH0R4psMaVuOGCUEhxBM2SN41j+9ghEgmxqk=
+github.com/xtech-cloud/hkg-msp-metatable v1.10.1/go.mod h1:xqQP0jiT13aaIXqWV6mX8Usu8iijtfbVud9IwCHDwkA=
 github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d h1:splanxYIlg+5LfHAM6xpdFEAYOk8iySO56hMFq6uLyA=
 github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d/go.mod h1:rHwXgn7JulP+udvsHwJoVG1YGAP6VLg4y9I5dyZdqmA=
 go.etcd.io/bbolt v1.3.4/go.mod h1:G5EMThwa9y8QZGBClrRx5EY+Yw9kAhnjy3bSjsnlVTQ=

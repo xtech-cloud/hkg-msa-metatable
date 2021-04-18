@@ -69,18 +69,17 @@ func (this *Schema) List(_ctx context.Context, _req *proto.ListRequest, _rsp *pr
 			Uuid: v.ID,
 			Name: v.Name,
 		}
-		_rsp.Entity[i].Builder = make([]*proto.BuilderEntity, len(v.Builder))
-		for j, builder := range v.Builder {
-			_rsp.Entity[i].Builder[j] = &proto.BuilderEntity{
-				Source: builder.Source,
-			}
-			_rsp.Entity[i].Builder[j].Rule = make([]*proto.RuleEntity, len(builder.Rule))
-			for k, rule := range builder.Rule {
-				_rsp.Entity[i].Builder[j].Rule[k] = &proto.RuleEntity{
-					Field:   rule.Field,
-					Text:    rule.Text,
-					Element: rule.Element,
-				}
+		_rsp.Entity[i].Rule = make([]*proto.RuleEntity, len(v.Rule))
+		for j, rule := range v.Rule {
+			_rsp.Entity[i].Rule[j] = &proto.RuleEntity{
+				Name:    rule.Name,
+				Field:   rule.Field,
+				Type:    rule.Type,
+				Element: rule.Element,
+				Pair: &proto.PairEntity{
+					Key:   rule.Pair.Key,
+					Value: rule.Pair.Value,
+				},
 			}
 		}
 	}

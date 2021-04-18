@@ -10,21 +10,23 @@ const (
 	SchemaCollectionName = "hkg_metatable_schema"
 )
 
-type Rule struct {
-	Field   string `bason:"field" yaml:"field"`
-	Text    string `bason:"text" yaml:"text"`
-	Element string `bason:"element" yaml:"element"`
+type Pair struct {
+	Key   string `bason:"key" yaml:"key"`
+	Value string `bason:"value" yaml:"value"`
 }
 
-type Builder struct {
-    Source string `bason:"source" yaml:"source"`
-    Rule   []Rule `bason:"rule" yaml:"rule"`
+type Rule struct {
+	Name    string `bason:"name" yaml:"name"`
+	Field   string `bason:"field" yaml:"field"`
+	Type    string `bason:"type" yaml:"type"`
+	Element string `bason:"element" yaml:"element"`
+	Pair    Pair   `bason:"pair" yaml:"pair"`
 }
 
 type Schema struct {
-    ID      string    `bson:"_id"`
-    Name    string    `bason:"name" yaml:"name"`
-    Builder []Builder `bson:"builder" yaml:"builder"`
+	ID   string `bson:"_id"`
+	Name string `bason:"name" yaml:"name"`
+	Rule []Rule `bson:"rule" yaml:"rule"`
 }
 
 type SchemaDAO struct {
@@ -111,7 +113,7 @@ func (this *SchemaDAO) UpdateOne(_schema *Schema) error {
 	filter := bson.D{{"name", _schema.Name}}
 	update := bson.D{
 		{"$set", bson.D{
-			{"builder", _schema.Builder},
+			{"rule", _schema.Rule},
 		}},
 	}
 	_, err := this.conn.DB.Collection(SchemaCollectionName).UpdateOne(ctx, filter, update)
