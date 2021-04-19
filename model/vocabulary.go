@@ -2,7 +2,6 @@ package model
 
 import (
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -15,7 +14,6 @@ type Vocabulary struct {
 	Name   string   `bason:"name" yaml:"name"`
 	Label  []string `bason:"label" yaml:"label"`
 	Value  []string `bason:"value" yaml:"value"`
-	Schema string   `bason:"schema" yaml:"schema"`
 }
 
 type VocabularyDAO struct {
@@ -34,68 +32,29 @@ func NewVocabularyDAO(_conn *Conn) *VocabularyDAO {
 	}
 }
 
-func (this *VocabularyDAO) InsertOne(_vocabulary *Vocabulary) (_err error) {
+func (this *VocabularyDAO) UpsertOne(_vocabulary *Vocabulary) (_err error) {
 	_err = nil
 
 	ctx, cancel := NewContext()
 	defer cancel()
 
-	document, err := bson.Marshal(_vocabulary)
-	if nil != err {
-		_err = err
-		return
-	}
+    filter := bson.D{{"_id", _vocabulary.ID}}
+    update := bson.D {
+        {"$set", bson.D{
+            {"name", _vocabulary.Name},
+            {"label", _vocabulary.Label},
+            {"value", _vocabulary.Value},
+        }},
+    }
 
-	_, err = this.conn.DB.Collection(VocabularyCollectionName).InsertOne(ctx, document)
-	if nil != err {
-		// 忽略键重复的错误
-		if mongo.IsDuplicateKeyError(err) {
-			err = nil
-		}
-	}
+    upsert := true
+    options := &options.UpdateOptions{
+        Upsert: &upsert,
+    }
+
+    _, err := this.conn.DB.Collection(VocabularyCollectionName).UpdateOne(ctx, filter, update, options)
 	_err = err
 	return
-}
-
-func (this *VocabularyDAO) InsertMany(_vocabulary []*Vocabulary) (_err error) {
-	_err = nil
-
-	ctx, cancel := NewContext()
-	defer cancel()
-
-	documentAry := make([]interface{}, len(_vocabulary))
-	for i, vocabulary := range _vocabulary {
-		document, err := bson.Marshal(vocabulary)
-		if nil != err {
-			_err = err
-			return
-		}
-		documentAry[i] = document
-	}
-
-	_, err := this.conn.DB.Collection(VocabularyCollectionName).InsertMany(ctx, documentAry)
-	if nil != err {
-		// 忽略键重复的错误
-		if mongo.IsDuplicateKeyError(err) {
-			err = nil
-		}
-	}
-	_err = err
-	return
-}
-
-func (this *VocabularyDAO) FindOne(_name string) (*Vocabulary, error) {
-	ctx, cancel := NewContext()
-	defer cancel()
-
-	filter := bson.D{{"name", _name}}
-	res := this.conn.DB.Collection(VocabularyCollectionName).FindOne(ctx, filter)
-	if res.Err() == mongo.ErrNoDocuments {
-		return nil, nil
-	}
-	var vocabulary Vocabulary
-	err := res.Decode(&vocabulary)
-	return &vocabulary, err
 }
 
 func (this *VocabularyDAO) Count() (int64, error) {
@@ -144,7 +103,7 @@ func (this *VocabularyDAO) UpdateOne(_vocabulary *Vocabulary) error {
 	update := bson.D{
 		{"$set", bson.D{
 			{"label", _vocabulary.Label},
-			{"schema", _vocabulary.Schema},
+			{"value", _vocabulary.Value},
 		}},
 	}
 	_, err := this.conn.DB.Collection(VocabularyCollectionName).UpdateOne(ctx, filter, update)

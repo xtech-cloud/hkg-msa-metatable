@@ -2,7 +2,6 @@ package model
 
 import (
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -45,25 +44,26 @@ func NewSchemaDAO(_conn *Conn) *SchemaDAO {
 	}
 }
 
-func (this *SchemaDAO) InsertOne(_schema *Schema) (_err error) {
+func (this *SchemaDAO) UpsertOne(_schema *Schema) (_err error) {
 	_err = nil
 
 	ctx, cancel := NewContext()
 	defer cancel()
 
-	document, err := bson.Marshal(_schema)
-	if nil != err {
-		_err = err
-		return
-	}
+    filter := bson.D{{"_id", _schema.ID}}
+    update := bson.D {
+        {"$set", bson.D{
+            {"name", _schema.Name},
+            {"rule", _schema.Rule},
+        }},
+    }
 
-	_, err = this.conn.DB.Collection(SchemaCollectionName).InsertOne(ctx, document)
-	if nil != err {
-		// 忽略键重复的错误
-		if mongo.IsDuplicateKeyError(err) {
-			err = nil
-		}
-	}
+    upsert := true
+    options := &options.UpdateOptions{
+        Upsert: &upsert,
+    }
+
+    _, err := this.conn.DB.Collection(SchemaCollectionName).UpdateOne(ctx, filter, update, options)
 	_err = err
 	return
 }

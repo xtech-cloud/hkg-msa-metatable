@@ -33,7 +33,7 @@ func (this *Source) ImportYaml(_ctx context.Context, _req *proto.ImportYamlReque
 
 	dao := model.NewSourceDAO(nil)
 	source.ID = model.ToUUID(source.Name)
-	err = dao.InsertOne(source)
+	err = dao.UpsertOne(source)
 	return err
 }
 

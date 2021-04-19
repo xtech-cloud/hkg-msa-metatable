@@ -33,7 +33,7 @@ func (this *Vocabulary) ImportYaml(_ctx context.Context, _req *proto.ImportYamlR
 
 	dao := model.NewVocabularyDAO(nil)
     vocabulary.ID = model.ToUUID(vocabulary.Name)
-	err = dao.InsertOne(vocabulary)
+	err = dao.UpsertOne(vocabulary)
 	return err
 }
 
@@ -69,7 +69,6 @@ func (this *Vocabulary) List(_ctx context.Context, _req *proto.ListRequest, _rsp
 			Uuid:  v.ID,
 			Name:  v.Name,
 			Label: v.Label,
-            Schema: v.Schema,
             Value: v.Value,
 		}
 	}
