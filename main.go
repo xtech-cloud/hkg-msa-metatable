@@ -38,6 +38,7 @@ func main() {
 	proto.RegisterVocabularyHandler(service.Server(), new(handler.Vocabulary))
 	proto.RegisterSourceHandler(service.Server(), new(handler.Source))
 	proto.RegisterSchemaHandler(service.Server(), new(handler.Schema))
+	proto.RegisterFormatHandler(service.Server(), new(handler.Format))
 
 	app, _ := filepath.Abs(os.Args[0])
 
